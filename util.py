@@ -1,4 +1,33 @@
 from Style import *
+from program import *
+
+def load_dictionary(file_path):
+    with open(file_path, 'r') as file:
+        dictionary = set(word.strip().lower() for word in file.readlines())
+    return dictionary
+
+def find_closest_word(input_word, dictionary):
+    closest_word = None
+    min_distance = float('inf')
+    for word in dictionary:
+        dist = cached_levenshtein_distance(input_word, word)
+        
+        if word.startswith(input_word[0]):
+            dist -= 0.5 
+
+        if abs(len(word) - len(input_word)) <= 1:
+            dist -= 0.5
+
+        if dist < min_distance:
+            min_distance = dist
+            closest_word = word
+        
+        if dist == 0:  
+            break
+
+    if min_distance > 2 or closest_word is None: 
+        return input_word
+    return closest_word
 
 def display_questions(matched_questions):
     print(Style.HEADER + Style.BOLD + "Top Matched Questions:" + Style.ENDC)
